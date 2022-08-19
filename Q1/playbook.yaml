@@ -25,8 +25,6 @@
     rescue:
       - fail:
           msg: "{{ prv_common_azcli_login_output.stderr_lines }}"
-          
-  
     
   - name: Define Environment variables 
     no_log: no
@@ -116,8 +114,7 @@
             source_address_prefix: "192.168.1.0/24"
             source_port_range: "*"
             destination_address_prefix: "*"
-            destination_port_range:  "22"
-	  	  
+            destination_port_range:  "22"	  	  
 	  	  
           - name: SSH2
             protocol: Tcp
@@ -144,8 +141,7 @@
             source_address_prefix: "192.168.2.0/24"
             source_port_range: "*"
             destination_address_prefix: "*"
-            destination_port_range:  "22"
-	  	  
+            destination_port_range:  "22"	  	  
 	  	
           - name: SSH2
             protocol: Tcp
@@ -157,10 +153,7 @@
             source_port_range: "*"
             destination_address_prefix: "*"
             destination_port_range:  "22"
-	  
-  
-  
-  
+	 
   - name: create db tier
     block: 
     - name: "Create Azure SQL Server Logical host"
@@ -184,15 +177,12 @@
           name: AzurePublicPeeringIrving
           resource_group: "{{rg_name}}"
           server_name: "{{sqlserver}}" 
-
   
   - name: Create public ip
     azure.azcollection.azure_rm_publicipaddress:
       resource_group: {{rg_name}}
       allocation_method: Static
       name: webip
-  
-  
   
   - name: Create NIC
     azure.azcollection.azure_rm_networkinterface:
@@ -234,8 +224,7 @@
             disk_size_gb: 30
             managed_disk_type: Standard_LRS
             caching: ReadOnly
-            
-            
+  
   - name: Create VMSS
       no_log: true
       azure_rm_virtualmachinescaleset:
