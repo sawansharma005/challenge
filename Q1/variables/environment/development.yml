@@ -1,0 +1,7 @@
+rg_name: challengerg
+vnet_name: challengevnet
+admin: "challengeuser"
+sqlserver: "challengesqlserver"
+sqldb: "challengesqldb"
+webvmss_admin_username: "webvmss"
+app_admin_username: "appvmss"
