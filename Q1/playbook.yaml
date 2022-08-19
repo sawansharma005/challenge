@@ -4,8 +4,8 @@
       
   tasks:
   - name: Define Profiled AKS variables
-      no_log: no
-      include_vars: "variables/create/aks-variables.yml" 
+    no_log: no
+    include_vars: "variables/create/aks-variables.yml" 
       
   - name: Login to Azure
     block:
@@ -41,7 +41,7 @@
     block: 
     - name: Create virtual network
       azure.azcollection.azure_rm_virtualnetwork:
-        resource_group: {{rg_name}}
+        resource_group: {{ rg_name }}
         name: {{vnet_name}}
         address_prefixes: "{{ vnet_add_space }}" "10.10.0.0/16"
     
