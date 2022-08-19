@@ -1,0 +1,269 @@
+- connection: local
+  gather_facts: true
+  hosts: localhost   
+      
+  tasks:
+  - name: Define Profiled AKS variables
+      no_log: no
+      include_vars: "variables/create/aks-variables.yml" 
+      
+  - name: Login to Azure
+    block:
+      - name: Set AZ Cloud
+        shell: >
+          az cloud set --name {{ var_azureCloud | quote }}
+        changed_when: false
+        register: prv_common_azcli_login_output
+    
+      - name: AZ Login to Azure
+        shell: >
+          az login --service-principal --username {{ AZURE_RM_CLIENTID | quote }} --password {{ AZURE_RM_SECRET | quote }} --tenant {{ AZURE_RM_TENANTID | quote }}
+        changed_when: false
+        register: prv_common_azcli_login_output
+        no_log: yes
+    
+    rescue:
+      - fail:
+          msg: "{{ prv_common_azcli_login_output.stderr_lines }}"
+          
+  
+    
+  - name: Define Environment variables 
+    no_log: no
+    include_vars: "variables/environment/{{ ansible_environment }}.yml"
+    
+  - name: Create a resource group
+    azure_rm_resourcegroup:
+      name: {{rg_name}}
+      location: westus
+      tags:
+        environment: {{ansible_environment}}
+  
+  - name: create network components
+    block: 
+    - name: Create virtual network
+      azure.azcollection.azure_rm_virtualnetwork:
+        resource_group: {{rg_name}}
+        name: {{vnet_name}}
+        address_prefixes: "{{ vnet_add_space }}" "10.10.0.0/16"
+    
+    - name: Add subnet
+      azure.azcollection.azure_rm_subnet:
+        resource_group: {{rg_name}}
+        name: websubnet
+        address_prefix: "192.168.1.0/24"
+        virtual_network: "{{vnet_name}}"
+        security_group: web-nsg     
+        
+    - name: Add subnet
+      azure.azcollection.azure_rm_subnet:
+        resource_group: {{rg_name}}
+        name: appsubnet
+        address_prefix: "192.168.2.0/24"
+        virtual_network: "{{vnet_name}}"
+        security_group: app-nsg
+	  
+    - name: Add subnet
+      azure.azcollection.azure_rm_subnet:
+        resource_group: {{rg_name}}
+        name: dbsubnet
+        address_prefix: "192.168.3.0/24"
+        virtual_network: "{{vnet_name}}"
+        security_group: db-nsg
+  
+     
+  - name: create nsgs
+    block:   
+  
+    - name: Create security group that allows SSH
+      azure.azcollection.azure_rm_securitygroup:
+        resource_group: {{rg_name}}
+        name: web-nsg
+        rules:
+          - name: SSH1
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 101
+            direction: Inbound
+            source_address_prefix: "*"
+            source_port_range: "*"
+            destination_address_prefix: "*"
+            destination_port_range:  "22"
+	  	  
+          - name: SSH2
+            protocol: Tcp
+            destination_port_range: 22
+            access: Deny
+            priority: 100
+            direction: Inbound
+            source_address_prefix: "192.168.3.0/24
+            source_port_range: "*"
+            destination_address_prefix: "*"
+            destination_port_range:  "22"
+	  	  
+    - name: Create security group that allows SSH
+      azure.azcollection.azure_rm_securitygroup:
+        resource_group: {{rg_name}}
+        name: app-nsg
+        rules:
+          - name: SSH1
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 101
+            direction: Inbound
+            source_address_prefix: "192.168.1.0/24"
+            source_port_range: "*"
+            destination_address_prefix: "*"
+            destination_port_range:  "22"
+	  	  
+	  	  
+          - name: SSH2
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 100
+            direction: Outbound
+            source_address_prefix: "192.168.1.0/24"
+            source_port_range: "*"
+            destination_address_prefix: "*"
+            destination_port_range:  "22"
+            
+    - name: Create security group that allows SSH
+      azure.azcollection.azure_rm_securitygroup:
+        resource_group: {{rg_name}}
+        name: db-nsg
+        rules:
+          - name: SSH1
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 101
+            direction: Inbound
+            source_address_prefix: "192.168.2.0/24"
+            source_port_range: "*"
+            destination_address_prefix: "*"
+            destination_port_range:  "22"
+	  	  
+	  	
+          - name: SSH2
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 100
+            direction: Outbound
+            source_address_prefix: "192.168.2.0/24"
+            source_port_range: "*"
+            destination_address_prefix: "*"
+            destination_port_range:  "22"
+	  
+  
+  
+  
+  - name: create db tier
+    block: 
+    - name: "Create Azure SQL Server Logical host"
+      azure_rm_sqlserver: 
+        admin_password: "{{password}}"
+        admin_username: "{{admin}}"
+        name: "{{sqlserver}}"
+        resource_group: "{{rg_name}}"
+        version: "12.0"
+          
+      - name: name: "Create Azure SQL Database"
+        azure_rm_sqldatabase: 
+          name: "{{sqldb}}"
+          resource_group: "{{rg_name}}"
+          server_name: "{{sqlserver}}"
+          
+      - name: "Create Azure Firewall Rule"
+        azure_rm_sqlfirewallrule: 
+          start_ip_address: "192.168.2.0"
+          end_ip_address: "192.168.2.255"
+          name: AzurePublicPeeringIrving
+          resource_group: "{{rg_name}}"
+          server_name: "{{sqlserver}}" 
+
+  
+  - name: Create public ip
+    azure.azcollection.azure_rm_publicipaddress:
+      resource_group: {{rg_name}}
+      allocation_method: Static
+      name: webip
+  
+  
+  
+  - name: Create NIC
+    azure.azcollection.azure_rm_networkinterface:
+      resource_group: {{rg_name}}
+      name: webnic
+      virtual_network: {{vnet_name}}
+      subnet: websubnet
+      public_ip_name: webip
+      security_group: web-nsg
+  
+  - name: Create VMSS
+      no_log: true
+      azure_rm_virtualmachinescaleset:
+        resource_group: "{{ rg_name }}"
+        name: "webvmss"
+        vm_size: Standard_DS1_v2
+        admin_username: "{{ admin_username }}"
+        admin_password: "{{ admin_password }}"
+        ssh_password_enabled: true
+        capacity: 2
+        virtual_network_name: "{{ vnet_name }}"
+        subnet_name: "{{ websubnet }}"
+        upgrade_policy: Manual
+        tier: Standard
+        managed_disk_type: Standard_LRS
+        os_disk_caching: ReadWrite
+        image:
+          offer: UbuntuServer
+          publisher: Canonical
+          sku: 16.04-LTS
+          version: latest
+        load_balancer: "webvmsslb"
+        data_disks:
+          - lun: 0
+            disk_size_gb: 20
+            managed_disk_type: Standard_LRS
+            caching: ReadOnly
+          - lun: 1
+            disk_size_gb: 30
+            managed_disk_type: Standard_LRS
+            caching: ReadOnly
+            
+            
+  - name: Create VMSS
+      no_log: true
+      azure_rm_virtualmachinescaleset:
+        resource_group: "{{ rg_name }}"
+        name: "appvmss"
+        vm_size: Standard_DS1_v2
+        admin_username: "{{ app_admin_username }}"
+        admin_password: "{{ app_admin_password }}"
+        ssh_password_enabled: true
+        capacity: 2
+        virtual_network_name: "{{vnet_name }}"
+        subnet_name: "{{ appsubnet }}"
+        upgrade_policy: Manual
+        tier: Standard
+        managed_disk_type: Standard_LRS
+        os_disk_caching: ReadWrite
+        image:
+          offer: UbuntuServer
+          publisher: Canonical
+          sku: 16.04-LTS
+          version: latest
+        load_balancer: "appvmsslb"
+        data_disks:
+          - lun: 0
+            disk_size_gb: 20
+            managed_disk_type: Standard_LRS
+            caching: ReadOnly
+          - lun: 1
+            disk_size_gb: 30
+            managed_disk_type: Standard_LRS
+            caching: ReadOnly
