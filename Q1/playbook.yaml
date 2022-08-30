@@ -43,7 +43,7 @@
       azure.azcollection.azure_rm_virtualnetwork:
         resource_group: {{ rg_name }}
         name: {{vnet_name}}
-        address_prefixes: "{{ vnet_add_space }}" "10.10.0.0/16"
+        address_prefixes: "{{ vnet_add_space }}"
     
     - name: Add subnet
       azure.azcollection.azure_rm_subnet:
