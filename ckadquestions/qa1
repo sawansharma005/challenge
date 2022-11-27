@@ -1,0 +1,97 @@
+#you will see a deployment and a service created under a new namespace named as bullseye in your cluster. This application have some issue, please modify the manifests so that you should be able to browse the application from your localhost using port-forwarding.
+
+To validate whether things are working or not use any or both of the blow commands
+#To access the appication from localhost
+kubectl port-forward service/bullseye-service 30001:80 -n bullseye
+or 
+kubectl port-forward deployment.apps/bullseye-deployment 30001:80 -n bullseye
+
+
+#Manifest 
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bullseye
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bullseye-deployment
+  namespace: bullseye
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bullseye
+  template:
+    metadata:
+      labels:
+        app: bullseye
+    spec:
+      containers:
+      - name: bullseye
+        image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
+        ports:
+        - containerPort: 80
+        env:
+        - name: TITLE
+          value: "Welcome to KaaS SingleTenant Cluster (kaaS)"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bullseye-service
+  namespace: bullseye
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: bullseye
+
+
+
+#Solution
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bullseye
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bullseye-deployment
+  namespace: bullseye
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bullseye
+  template:
+    metadata:
+      labels:
+        app: bullseye
+    spec:
+      containers:
+      - name: bullseye
+        image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
+        ports:
+        - containerPort: 80
+        env:
+        - name: TITLE
+          value: "Welcome to KaaS SingleTenant Cluster (kaaS)"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bullseye-service
+  namespace: bullseye
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: bullseye

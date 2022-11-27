@@ -1,0 +1,61 @@
+#Description
+Create a hostPath PersistentVolume named busybox-pv with storage 10Gi, access modes ReadWriteOnce, storageClassName manual, and volume at /mnt/data.
+Then create a persistent volume claim, named as busybox-pvc of 3Gi  storage and ReadWriteOnce access mode and make sure it should be bound status.
+Once done, update the pod created in question2 to mount the busybox-pvc at /tmp/test location.
+
+#Manifest.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: busybox-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: busybox-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox
+  name: busybox
+spec:
+  nodeSelector:
+    app: busybox
+  containers:
+  - image: busybox
+    name: busybox
+    command: ["/bin/bash", "sh", "sleep 3600"]
+    volumeMounts:
+    - mountPath: "/tmp/test"
+      name: busybox-pvc
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+  volumes:
+  - name: busybox-pvc
+    persistentVolumeClaim:
+      claimName: busybox-pvc 
+status: {} 
+#

@@ -1,0 +1,34 @@
+#Description
+
+Create a configmap called cm1 with values var1=val1, var2=val2.
+Once done create an pod, named as hello-world and image=nginx, with a volume nginx-volume, which reads data from this configmap cm1 and put it on the path /etc/cfg
+
+#Solution
+
+Step 1: Create configmap
+
+kubectl create cm cm1 --from-literal=var1=val1 --from-literal=var2=val2kubectl create cm cfgvolume --from-literal=var1=val1 --from-literal=var2=val2
+
+Step 2: Create pod with below manifest
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: hello-world
+  name: hello-world
+spec:
+  volumes:
+  - name: cm1-volume
+    configMap:
+      name: cm1
+  containers:
+  - image: nginx
+    name: hello-world
+    resources: {}
+    volumeMounts:
+    - name: cm1-volume
+      mountPath: /etc/cfg
+  restartPolicy: Never
+status: {}

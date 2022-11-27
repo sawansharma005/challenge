@@ -1,0 +1,28 @@
+#Node Affinity
+
+Description: 
+
+Create a busybox Pod which should only be running on node having label app=busybox and should sleep for 3600 seconds
+
+#Solution:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox
+  name: busybox
+spec:
+  nodeSelector:
+    app: busybox
+  containers:
+  - image: busybox
+    name: busybox
+    command: ["/bin/bash", "sh", "sleep 3600"]
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {} 
+
+
