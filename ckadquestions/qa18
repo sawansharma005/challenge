@@ -1,0 +1,25 @@
+#Create a Pod with an image Redis and configure a volume that lasts for the lifetime of the Pod
+
+Soution:
+
+# create apply the below snippet in linux machine
+cat << EOF|kubectl apply -f -
+> apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: redis-storage           # mounting the volume on the container
+      mountPath: /data/redis
+  volumes:
+  - name: redis-storage
+    emptyDir: {}
+> EOF
+
+# Validate the pod status
+kubectl get po redis
+

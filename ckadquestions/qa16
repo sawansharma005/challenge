@@ -1,0 +1,21 @@
+#Create a Cronjob with busybox image that prints date and hello from kubernetes cluster message for every minute
+#Verify that CronJob creating a separate job and pods for every minute to run and verify the logs of the pod
+#Delete the CronJob and verify all the associated jobs and pods are also deleted.
+
+Solution:
+
+#create cronjob
+kubectl create cronjob date-job --image=busybox --schedule="*/1 * * * *" -- bin/sh -c "date; echo Hello from kubernetes cluster"
+
+
+# Validate the cronjob and pods
+kubectl get job
+kubectl get po
+kubectl logs date-job-*
+
+# Delete the Cronjob
+kubectl delete cj date-job
+
+# Verify the pods and cronjob
+kubectl get po
+kubectl get cronjob

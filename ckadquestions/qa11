@@ -1,0 +1,32 @@
+# label a node01 as nodeName=nginxnode
+# create a pod named as qa11 with image=nginx in qa11 namespace.
+# pod should be deployed on a node labeled as nodeName=nginxnode
+
+Solution: 
+
+kubectl label node01 nodeName=nginxnode
+
+kubectl run qa11 --image=nginx -n qa11 --restart=Never --dry-run -o yaml > podqa11.yaml
+
+#edit the below manifest
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: qa11
+  name: qa11
+  namespace: qa11
+spec:
+  nodeSelector:           #Update the nodeselector
+    nodeName: nginxnode   #Update the nodeselector
+  containers:
+  - image: nginx
+    name: qa11
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+#apply the manifest
+kubectl apply -f podqa11.yaml

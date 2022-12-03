@@ -1,0 +1,44 @@
+#Create a Pod with main container busybox and which executes this “while true; do echo ‘Hi I am from Main container’ >> /var/log/index.html; sleep 5; done” and with sidecar container with nginx image which exposes on port 8080. Use emptyDir Volume and mount this volume on path /var/log for busybox and on path /usr/share/nginx/html for nginx container under qa9 namespace and verify both containers are running.
+
+Solution:
+
+kubectl run multi-cont-pod --image=busbox --restart=Never --dry-run -o yaml > multi-container.yaml
+
+#edit pod with below manifest
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: multi-cont-pod
+  name: multi-cont-pod
+spec:
+  volumes:
+  - name: var-logs
+    emptyDir: {}
+  containers:
+  - image: busybox
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo 'Hi I am from Main container' >> /var/log/index.html; sleep 5;done"]
+    name: main-container
+    resources: {}
+    volumeMounts:
+    - name: var-logs
+      mountPath: /var/log
+  - image: nginx
+    name: sidecar-container
+    resources: {}
+    ports:
+      - containerPort: 80
+    volumeMounts:
+    - name: var-logs
+      mountPath: /usr/share/nginx/html
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+#Apply the above manifest 
+kubectl apply -f multi-container.yaml
+
+#kubectl get po -n qa9

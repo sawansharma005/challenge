@@ -1,0 +1,12 @@
+# Create a busybox pod named as qa7 command sleep 3600 and  list the pod with different levels of verbosity
+# Also List the pods with custom columns POD_NAME and POD_STATUS and store the output under /tmp/qa7
+
+Solution:
+
+kubectl run qa7 --image=busybox --restart=Never -- /bin/sh -c "sleep 3600"
+
+kubectl get po qa7 --v=7
+kubectl get po qa7 --v=8
+kubectl get po qa7 --v=9
+
+kubectl get po -o=custom-columns="POD_NAME:.metadata.name, POD_STATUS:.status.containerStatuses[].state" > /tmp/qa7

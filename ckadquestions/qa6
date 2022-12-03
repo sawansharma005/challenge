@@ -1,0 +1,9 @@
+#Create a busybox pod and run  command ls while creating it and check the logs
+#Check the Image version without the describe command and find the pods IP and store it in /tmp/ip file
+
+kubectl run busybox --image=busybox --restart=Never -- ls
+kubectl logs busybox
+
+kubectl get po busybox -o jsonpath='{.spec.containers[].image}{"\n"}'
+
+kubectl get po busybox -o wide > /tmp/ip

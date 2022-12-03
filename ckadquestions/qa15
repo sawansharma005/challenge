@@ -1,0 +1,49 @@
+#Create a job named as k8sjob with the image busybox which echos “K8s Job” under ns 15 namespace
+#Verify the job and the associated pod is created and check the logs as well
+#Delete the job we just created
+#Create the same job and make it run 10 times one after one
+
+Solution:
+
+#create Job
+kubectl create job k8sjob --image=busybox -n ns15 --dry-run -o yaml -- echo "K8s Job" > k8sjob.yaml 
+kubectl create -f k8sjob.yaml
+
+#Verify the job and associated pod
+kubectl -n ns15 get job
+kubectl -n ns15 get po
+kubectl -n ns15 logs k8s*
+
+#Delete the above job
+kubectl delete job k8sjob
+
+#Recreate the job with 10 run
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: k8sjob
+  namespace: ns15
+spec:
+  completions: 10 #update 
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+        - echo
+        - k8s job
+        image: busybox
+        name: k8sjob
+        resources: {}
+      restartPolicy: Never
+status: {}
+
+#validate job
+kubectl get job -n ns15
+
+#Validate the pods
+kubectl get po -n ns15 --watch
+
+

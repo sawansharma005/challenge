@@ -1,0 +1,57 @@
+#Create a deployment of webapp with image nginx:1.17.1 with container port 80 and verify the image version
+#Update the deployment with the image version 1.17.4 and verify
+#Check the rollout history and make sure everything is ok after the update store the data in /tmp/qa13 file
+#Undo the deployment to point it to nginx:1.17.1 image
+
+solution:
+
+kubectl create deploy webapp --image=nginx:1.17.1 --dry-run -o yaml > webapp.yaml
+
+#edit the manifest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webapp
+  name: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - image: nginx:1.17.1
+        name: nginx
+        ports:
+        - containerPort: 80  #update container port
+        resources: {}
+status: {}
+
+
+#apply above Manifest
+kubectl create -f webapp.yaml
+
+
+#Update the image to nginx:1.17.4 version
+
+kubectl set image deploy/webapp nginx=nginx:1.17.4
+
+#Check the rollout history
+
+kubectl rollout history deploy webapp > /tmp/qa13
+
+#Undo the deployment image to point to 1.17.1 version
+kubectl rollout undo deploy webapp
+kubectl rollout status deploy webapp
+
+#Validate the image status
+kubectl describe deploy webapp | grep Image
+

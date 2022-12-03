@@ -1,0 +1,11 @@
+#Create a deployment qa12 under namespace ns12 called frontend with image=nginx and replicas=3
+#Once done, store the pod details in /tmp/qa12 file
+#Increate the replicas of the above deployment to 5
+
+Solution:
+
+kubectl create ns ns12 
+kubectl create deployment frontend --image=nginx --replicas=3 -n ns12
+kubectl get po -n ns12 > /tmp/qa12
+kubectl scale deployment frontend --replicas=5 -n ns12
+kubectl get po -n ns12

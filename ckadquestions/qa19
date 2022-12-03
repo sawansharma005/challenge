@@ -1,0 +1,33 @@
+#Create an nginx pod with containerPort 80 and with a PersistentVolumeClaim task-pv-claim and has a mouth path "/usr/share/nginx/html"
+Note: Use the pvc we created in qa17
+
+Solution:
+
+#Create manifest qa19.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-pv-pod
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:                 #pvc volume
+        claimName: task-pv-claim
+  containers:
+    - name: task-pv-container
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:  #Volume mount
+        - mountPath: "/usr/share/nginx/html"
+          name: task-pv-storage
+
+# kubectl create the above manifest
+
+kubectl create -f qa19.yaml
+
+# validate the pod status
+
+kubectl get po task-pv-pod

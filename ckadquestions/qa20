@@ -1,0 +1,14 @@
+#Create a configmap named keyvalcfgmap and read data from the file config.txt and verify that configmap is created correctly
+#erify the configmap we just created has this data
+#delete the configmap keyvalcfgmap we just created
+
+Solution:
+
+# create config map
+kubectl create cm keyvalcfgmap --from-file=config.txt
+
+# validate configmap and it's data
+kubectl get cm keyvalcfgmap -o yaml
+
+# delete configmap
+kubectl delete cm keyvalcfgmap
