@@ -1,0 +1,30 @@
+Create a Network Policy that should only allow  traffic from namespace ns33 and block all the other. 
+
+
+Solution:
+
+#Create namespace ns ns34
+kubectl create ns ns34
+
+#Label namespace ns33
+kubectl label ns ns33 ns:ns33
+
+#Create a network policy manifest
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              ns: ns33
+      ports:
+        - protocol: TCP
+          port: 6379

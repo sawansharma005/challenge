@@ -1,0 +1,46 @@
+Use the same configmap as we have created in question 23 in a nginx deployment and mount the configmap as nginx-volume and put the configmap data into /etc/qa24 directory in pod.
+
+solution:
+
+kubectl create deployment nginx --image=nginx --replicas=1 --dry-run=client -o yaml > qa24file.yaml
+
+#Update the manifest with below 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: nginx-volume
+        configMap:
+          name: cm1
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: nginx-volume
+          mountPath: /etc/qa24
+        resources: {}
+status: {}
+
+---
+kubectl apply -f qa24file.yaml
+
+#validation
+kubectl exec -it po/nginx-784674595c-zd5fb --  ls /etc/qa24
+

@@ -1,0 +1,48 @@
+Create a Daemonset under qa26 namespace, create namespace if not exist, with below details
+  name: dsqa26
+  image: nginx
+  capabilities: NET_ADMIN, SYS_TIME
+
+Validate the Daemonset and store the output in qa26 file.
+
+Solution:
+
+#Apply the below Manifest
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: qa26
+spec: {}
+status: {}
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dsqa26
+  namespace: qa26
+  labels:
+    k8s-app: dsqa26
+spec:
+  selector:
+    matchLabels:
+      name: dsqa26
+  template:
+    metadata:
+      labels:
+        name: dsqa26
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        securityContext:
+          capabilities:
+            add: ["SYS_TIME", "NET_ADMIN"]
+
+#Validation
+Kubectl get all -n aqa26
+
+kubectl get daemonset.apps/dsqa26 -n qa26 -o jsonpath='{.spec.template.spec.containers[0].securityContext}'
+
+
+

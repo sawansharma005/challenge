@@ -1,0 +1,31 @@
+Create the nginx deployment with 3 replicas and expose it on port 8080.
+Validate the deployment and service created.
+Browse the application using port-forwarding on the service.
+Delete the service and expose the deployment with nodeport type service.
+
+
+Solution:
+
+#create namespace ns33
+kubectl create ns ns33
+
+#create deployment 
+kubectl create deployment qa32 --replicas=3 --image=nginx -n ns33
+
+#expose deployment on port8080
+kubectl expose deployment qa32 --port=8080 --target-port=80 -n ns33
+
+#Validate using port-forward
+kubectl port-forward svc/qa32 8080:8080 -n ns33
+
+#On another terminal
+curl http://localhost:8080
+
+#Delete the service
+kubectl delete svc/qa32 -n ns33
+
+#Create a svc of type nodeport
+kubectl expose deployment qa32 --port=8080 --target-port=80 --type=NodePort -n ns33
+
+#validat the svc
+kubectl get svc -n ns33

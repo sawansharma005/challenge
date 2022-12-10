@@ -1,0 +1,110 @@
+Create a deployment named as qa27 with image=nginx in ns27 and make sure that the pods created by the above deployment should only use 
+cpu between .2 to .5 and
+memory between 100M to 200M
+
+Also make sure that the namespace should have a resource limit of .5 cpu and 500 M memory.
+
+Solution:
+Kubectl create deployment qa27 --image=nginx --replicas=1 -n ns27 --dry-run=client -o yaml > qa27.yaml
+
+#Update the qa27.yaml file with below manifest
+
+#Manifest
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: qa26
+spec: {}
+status: {}
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: qa27
+  name: qa27
+  namespace: ns27
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qa27
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: qa27
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: 
+          requests:
+            memory: "100Mi"
+            cpu: "0.2"
+          limits:
+            memory: "200Mi"
+            cpu: "0.5"
+status: {}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: qa27-quota
+  namespace: ns27
+spec:
+  hard:
+    limits.cpu: ".5"
+    limits.memory: 500Mi
+
+#Apply the manifest
+kubectl apply -f qa27.yaml
+
+
+
+#Validation
+
+Kubectl get all -n qa27
+
+#Try to create new deployment with below manifest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: qa27
+  name: qa27valid
+  namespace: ns27
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: qa27
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: qa27
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: 
+          requests:
+            memory: "500M"
+            cpu: "0.5"
+status: {}
+
+#Validat the replicaset
+kubectl describe replicaset.apps/qa27valid-* -n ns27
+
+#It should logs the below events
+Warning  FailedCreate      105s                replicaset-controller  Error creating: pods "qa27valid-8449c555d5-dml7s" is forbidden: failed quota: qa27-quota: must specify limits.cpu,limits.memory
+
+
+

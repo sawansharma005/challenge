@@ -1,0 +1,10 @@
+Create a deployment deploy30 under ns30 namespace with below details:
+  image=nginx
+  containerPort=8080
+  readinessProbe:
+    httpGet at / on port 8080
+  livenessProbe:
+    httpGet at /health on port 8080
+
+
+Solution:

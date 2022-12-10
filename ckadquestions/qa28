@@ -1,0 +1,71 @@
+namespace ns28 should have a secret secret28 which is supposed to be utilized by a busybox container in a pod.
+
+    1. Create a multicontainer pod named as qa28 in ns28 namespace with below configuration
+             container1: frontend
+             image: nginx
+             env: should come from secret28
+
+             container2: backend
+             image: busybox
+             command: sleep 3600
+             secret mount at: /etc/secret
+
+    2. Create secret secret28 with below details
+             username: test
+             password: 1234
+
+
+Solution:
+
+#Create namespace
+kubectl create ns ns28
+
+#Create secret 
+kubectl create secret generic secret28 --from-literal=username=test --from-literal=password=1234 -n ns28
+
+#Create the basic pod manifest
+kubectl run frontend --image=nginx -n ns28 --dry-run=client -o yaml
+
+#update the pod manifest 
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: frontend
+  name: frontend
+  namespace: ns28
+spec:
+  volumes:
+  - name: secret28
+    secret:
+      secretName: secret28
+      optional: false 
+  containers:
+  - image: busybox
+    name: backend
+    command: ["/bin/sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: secret28
+      mountPath: "/etc/secret"
+      readOnly: true
+  - image: nginx
+    name: frontend
+    env:
+    - name: username
+      valueFrom:
+        secretKeyRef:
+          name: secret28
+          key: username
+    - name: password
+      valueFrom:
+        secretKeyRef:
+          name: secret28
+          key: password
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+#Apply the Manifest
+kubectl apply -f qa28.yaml

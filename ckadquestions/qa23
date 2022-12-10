@@ -1,0 +1,34 @@
+#Create a configmap from a file called configuration.txt which contains below data
+env=production
+app=criticalapp
+
+Create the configmap named as cm1  from above data.
+Create a frontend deployment with nginx image which is loading the environment variable from the above configmap.
+Verify the environment variables in the pod and store the result into /tmp/ns23 file.
+
+Solution:
+
+kubectl create cm cm1 --from-literal=env=production --from-literal=app=critical
+kubectl get cm cm1 -o yaml
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: frontend
+  name: frontend
+spec:
+  containers:
+  - image: nginx
+    name: frontend
+    resources: {}
+    envFrom:
+    - configMapRef:
+        name: cm1
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+---
+ kubectl exec pod/frontend -- env >/tmp/ns23

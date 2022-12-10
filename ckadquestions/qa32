@@ -1,0 +1,13 @@
+Create a deployment 
+ Image: alpine 
+ Command: ”while true; do echo ‘Hi I am from alpine’; sleep 5; done” 
+ namespace: ns32
+ verify and follow the logs of the pod.
+
+ solution:
+
+ #Create pod
+ kubectl run hello --image=alpine --restart=Never  -- /bin/sh -c "while true; do echo 'Hi I am from Alpine'; sleep 5;done"
+
+ #Validate logs
+kubectl logs --follow hello

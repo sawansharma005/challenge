@@ -1,0 +1,45 @@
+1. Create a namespace ns29
+2. Create a service account admin in namespace ns29 
+3. Create a Job named as job29 with busybox image and admin service account. The job should finishing after echoing "Hello Busybox"
+
+
+solution:
+
+#create namespace
+kubectl create ns ns29
+
+#Create service account
+kubectl create sa admin -n ns29
+
+#Create job 
+
+#Create manifest for the job
+kubectl create job job29 --image=busybox -n ns29 --dry-run=client -o yaml >qa29.yaml
+
+#Update the file using below manifest
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: job29
+  namespace: ns29
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      serviceAccount: admin
+      containers:
+      - image: busybox
+        name: job29
+        command: ["/bin/sh","-c","echo 'Hello Busybox'"]
+        resources: {}
+      restartPolicy: Never
+status: {}
+
+#Apply the manifest created above
+kubectl apply -f qa29.yaml
+
+#Validate the pod and it's logs
+kubectl get all -n ns20
+kubectl logs pod/job29-* -n ns29

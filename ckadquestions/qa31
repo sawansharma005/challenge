@@ -1,0 +1,5 @@
+Create the pod nginx with the below liveness and readiness probes so that it should wait for 20 seconds before it checks liveness and readiness probes and it should check every 25 seconds.
+  readinessProbe:
+    httpGet at / on port 8080
+  livenessProbe:
+    httpGet at /health on port 8080
