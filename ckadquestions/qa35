@@ -1,2 +1,35 @@
 Create an nginx deployment of 2 replicas, expose it via a ClusterIP service on port 80 in namespace ns35
 Create a NetworkPolicy so that only pods with labels 'access: granted' can access the deployment and apply it
+
+Solution:
+#Create namespace
+kubectl create ns ns35
+
+#Create deployment
+kubectl create deployment nginx --image=nginx --replicas=2 -n ns35
+
+#Create service
+kubectl expose deployment nginx --name=nginx --port=80 --target-port=80 -n ns35
+
+#Apply the manifest
+cat << EOF |kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allowdeploy
+  namespace: ns35
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              access: grant
+      ports:
+        - protocol: TCP
+          port: 80
+EOF

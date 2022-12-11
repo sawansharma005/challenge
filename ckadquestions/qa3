@@ -3,6 +3,10 @@ Create a hostPath PersistentVolume named busybox-pv with storage 10Gi, access mo
 Then create a persistent volume claim, named as busybox-pvc of 3Gi  storage and ReadWriteOnce access mode and make sure it should be bound status.
 Once done, update the pod created in question2 to mount the busybox-pvc at /tmp/test location.
 
+
+Solution:
+
+
 #Manifest.yaml
 apiVersion: v1
 kind: PersistentVolume

@@ -3,4 +3,22 @@ Create a new container named demo-container from nginx image. Login to the Docke
 Save this container image to a TAR file so that it can be exported to a different server.   
 
 Solution:
-Docker pull nginx
+
+# Run Docker container
+docker container run -d --name demo-container nginx
+
+# Login into docker container
+docker exec -it demo-container sh
+
+# Create modified.txt under /tmp directory in docker container
+ touch /tmp/modified.txt
+
+# Save container to an image
+docker commit "$CONTAINER ID"
+
+# Validate docker image and tag it to readable name
+docker images
+docker tag $REPOSITORY demo-container:latest
+
+# Save the image to the tar file
+docker save demo-container > demo-container.tar

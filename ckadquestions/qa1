@@ -7,6 +7,8 @@ or
 kubectl port-forward deployment.apps/bullseye-deployment 30001:80 -n bullseye
 
 
+Solution:
+
 #Manifest 
 
 apiVersion: v1

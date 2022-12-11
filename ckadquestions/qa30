@@ -1,10 +1,18 @@
-Create a deployment deploy30 under ns30 namespace with below details:
-  image=nginx
-  containerPort=8080
-  readinessProbe:
-    httpGet at / on port 8080
-  livenessProbe:
-    httpGet at /health on port 8080
-
+Create a pod with the name of nginx-ports. The pod should be launched from an image of nginx The name of the container should be nginx. Expose Port 80 for the POD.
 
 Solution:
+
+#Applying Manifest
+
+cat << EOF|kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-ports
+spec:
+  containers:
+  - image: nginx
+    name: nginx-ports
+    ports:
+    - containerPort: 80
+EOF

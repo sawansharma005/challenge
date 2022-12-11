@@ -2,7 +2,7 @@
 #Then change the Image version to 1.15-alpine for the pod you just created and verify the image version is updated
 
 
-Solution
+Solution:
 kubectl run hello-world --image=nginx:1.17.4 --restart=Never --port=8080
 
 kubectl set image pod/hello-world hello-world=nginx:1.15-alpine

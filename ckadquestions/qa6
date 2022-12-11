@@ -1,6 +1,8 @@
 #Create a busybox pod and run  command ls while creating it and check the logs
 #Check the Image version without the describe command and find the pods IP and store it in /tmp/ip file
 
+Solution:
+
 kubectl run busybox --image=busybox --restart=Never -- ls
 kubectl logs busybox
 
