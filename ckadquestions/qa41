@@ -1,0 +1,48 @@
+Apply the Following Manifest File to your k8s:
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: newqa41
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: troubleshoot-deployment
+  name: troubleshoot-deployment
+  namespace: newqa41
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: troubleshoot-deployment
+  template:
+    metadata:
+      labels:
+        run: troubleshoot-deployment
+    spec:
+      containers:
+      - image: ninx
+        name: troubleshoot-deployment
+
+There are failed deployments within your cluster. Find and fix it.
+
+Solution:
+
+Apply the Provided manifest file
+
+kubectl apply -f troubleshoot-deployment.yaml
+
+Step 2: Find all the deployments across all the namespaces
+
+kubectl get deployment --all-namespaces
+
+In the output of above command, you will see one deployment where none of the pods are in ready state (0/2). The deployment name is troubleshoot-deployment and resides in newqa41 namespace.
+
+When you inspect the properties of deployment, you will see there is typo in the name of nginx image, it is "ninx". Edit the deployment and add the right name.
+
+kubectl edit deployment troubleshoot-deployment  -n newqa41
+
+After you have modified and added the right image, re-run the kubectl get deployment command for all namespaces to ensure that all the pods are up (2/2)

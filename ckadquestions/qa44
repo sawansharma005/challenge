@@ -1,0 +1,36 @@
+Create a deployment named qa44-configuration. The deployment should have 3 replicas of nginx image. Once the deployment is created, verify the maxSurge and maxUnavailable parameters. Edit the the maxUnavailable to 0 and maxSurge to 30% on the live deployment object. Once those two parameters are modified, change the image of the deployment to nginx:alpine. Make sure to use the record instruction on rolling updates.
+
+Solution:
+
+Step 1: Create the Deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: qa44-configuration
+  name: qa44-configuration
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: qa44-configuration
+  template:
+    metadata:
+      labels:
+        run: qa44-configuration
+    spec:
+      containers:
+      - image: nginx
+        name: qa44-configuration
+
+Step 2: Verification
+To verify the maxSurge and maxUnavailable parameters, run the following command:
+kubectl get deployment qa44-configuration -o yaml
+
+Step 3: Modify the Parameters
+kubectl edit deployment qa44-configuration
+Edit the maxUnavailable to 0 and maxSurge to 30%
+
+Set 4: Set New Image;
+
+kubectl set image deployment qa44-configuration qa44-configuration=nginx:alpine --record

@@ -1,0 +1,56 @@
+Create a redis deployment with the following parameters:
+Name of the deployment should be redis using the redis:alpine image. It should have exactly 1 replica.
+The container should request for .2 CPU. It should use the label app=redis.
+It should mount exactly 2 volumes.
+
+a. An Empty directory volume called data at path /redis-master-data.
+b. A configmap volume called redis-config at path /redis-master.
+c. The container should expose the port 6379.
+The configmap has already been created.
+
+data:
+  redis-config: |
+    maxmemory 2mb
+    maxmemory-policy allkeys-lru
+
+Solution:
+
+kubectl create deployment redis --image=redis:alpine --replicas=1 --dry-run=client -o yaml >qa48.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis
+    spec:
+      volumes:
+      - name: empty-dir
+        emptyDir: {}
+      - name: redis-config
+        configMap:
+          name: redis-config
+      containers:
+      - image: redis:alpine
+        name: redis
+        resources: 
+          requests:
+            cpu: .2
+        volumeMounts:
+        - name: empty-dir
+          mountPath: /redis-master-data
+        - name: redis-config
+          mountPath: /redis-master
+status: {}

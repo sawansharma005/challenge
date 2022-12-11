@@ -1,0 +1,49 @@
+A replicaset rs-d33393 is created. However the pods are not coming up. Identify and fix the issue.
+
+Once fixed, ensure the ReplicaSet has 4 Ready replicas.
+
+#replicaset monifest
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-d33393
+  namespace: default
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      name: busybox-pod
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: busybox-pod
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - echo Hello Kubernetes! && sleep 3600
+        image: busyboxXXXXXXX
+        imagePullPolicy: IfNotPresent
+        name: busybox-container
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+solution:
+
+kubectl get all 
+
+The status of pods shows invalid image name so we need to describe the replicaset and see the image
+
+As you can see the image is pointing to busyboxXXXXXXX which is a typo. To get the issue solved do
+
+kubectl edit rs rs-d33393
+
+replace the image with busybox.

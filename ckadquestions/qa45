@@ -1,0 +1,46 @@
+Create a pod named qa45-logging
+
+The Pod should have a container running from the nginx image with the following arguments:
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        echo "$(date) INFO $i" >> /var/log/2.log;
+        i=$((i+1));
+        sleep 1;
+      done
+Once POD is created, connect to the POD and verify the contents of /var/log/1.log and /var/log/2.log
+
+Solution:
+Step 1: Create the POD
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qa45-logging
+spec:
+  containers:
+  - image: nginx
+    name: logging-container
+    args:
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        echo "$(date) INFO $i" >> /var/log/2.log;
+        i=$((i+1));
+        sleep 1;
+      done
+
+
+Step 2: Check the Logs
+
+kubectl exec -it qa45-logging bash
+tail /var/log/1.log
+tail /var/log/2.log

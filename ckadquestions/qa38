@@ -1,0 +1,41 @@
+a. Create a Multi-Container POD with the name of multi-container.
+b. There should be three containers in the pod.
+c. Name the first container should be first-container, 2nd container should be second-container and 3rd container should be third-container
+d. 1st container should be launched from nginx image, the second container should be launched from 
+e. Connect to the first-container and run the following command:  apt-get update && apt-get install net-tools
+f. Connect to the third-container and identify the ports in which processes are listening. Perform wget command on those ports and check if you can download the HTML page.
+
+Solution:
+
+Step 1: Create Multi-Container Pods based on defined specification
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multicontainer
+spec:
+  containers:
+  - name: first-container
+    image: nginx
+  - name: second-container
+    image: nginx
+  - name: third-container
+    image: busybox
+    command: ["sleep", "3600"]
+
+Step 2: Connect to First Container and Run Defined Commands
+
+kubectl exec -it multicontainer -c first-container bash
+
+apt-get update && apt-get install net-tools
+
+Step 3: Connect to 3rd container and Identify Ports
+
+kubectl exec -it multicontainer -c third-container sh
+
+Step 4: Perform wget on all the ports
+
+wget localhost:80
+wget localhost:9080
+
+

@@ -1,0 +1,107 @@
+We have deployed a new pod called secure-pod and a service called secure-service. Incoming or Outgoing connections to this pod are not working.
+Troubleshoot why this is happening.
+Make sure that incoming connection from the pod webapp-color are successful.
+Connectivity working?
+
+Pod defination
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: secure-pod
+  name: secure-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx
+    imagePullPolicy: Always
+    name: secure-pod
+    resources: {}
+
+#Service Manifest
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: secure-pod
+  name: secure-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: secure-pod
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+#Webapp Color pod
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    name: webapp-color
+  name: webapp-color
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: APP_COLOR
+      value: pink
+    image: ubuntu
+    imagePullPolicy: Always
+    name: webapp-color
+    resources: {}
+
+
+solution:
+
+#Reason for deny communication is below network policy
+
+Existing Network policy:
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: "2022-12-11T11:06:48Z"
+  generation: 1
+  name: default-deny
+  namespace: default
+  resourceVersion: "1128"
+  uid: ce3b8a28-e0ab-4a53-9aa8-b4bd35468b46
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+status: {}
+
+
+So we have to create a new network policy to enable communication to secure-pod from webapp-color
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      run: secure-pod
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              name: webapp-color
+      ports:
+        - protocol: TCP
+          port: 80
+
+#Validation:
+kubectl exec -it webapp-color -- sh
+nc -v -z -w 2 secure-service:80
+

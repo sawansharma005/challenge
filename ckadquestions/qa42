@@ -1,0 +1,37 @@
+Create a deployment named qa42-updates. The deployment should be launched from nginx image. There should be two  replicas. Verify the status of the deployment. As part of rolling update, update the image to nginx2:alpine. Verify the status of deployment. Perform a rollback to the previous version. Verify the status of deployment.
+
+solution:
+
+Step 1: Create a Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: qa42-updates
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: qa42-updates
+
+
+Step 2: Perform Rolling Update
+kubectl set image deployment qa42-updates qa42-updates=nginx2:alpine --record=true
+
+Step 3: Verify Status of Deployment
+This can be verified in multiple ways, here are some of the approaches
+
+kubectl rollout status deployment qa42-updates
+kubectl get pods
+
+In the output of kubectl get pods command, you will see that new POD as part of deployment has failed to launch with the rror of ImagePullBackOff

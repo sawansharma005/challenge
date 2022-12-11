@@ -1,0 +1,60 @@
+Apply the following manifest file in your k8s environment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: qa40-service
+  name: qa40-fix
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: qa40-fix
+  template:
+    metadata:
+      labels:
+        run: qa40-fix
+    spec:
+      containers:
+      - image: nginx
+        name: qa40-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fix-service
+  labels:
+    run: fix-service
+spec:
+  ports:
+  - port: 8080
+    targetPort: 80
+    protocol: TCP
+  selector:
+    run: qa4-fix
+
+Verify if you are able to access the website by reference to the service IP address from a busybox pod. If it's not working, fix the issue so that the website is downloadable when the following command is run: wget [SERVICE-IP]:8080
+
+Solution:
+
+create the objects according to given manifest:
+
+kubectl apply -f troubleshoot-service.yaml
+
+Step 2: Create a Busybox Pod for Testing
+
+kubectl run busybox --image=busybox --command sleep 3600
+
+Step 3: Verify if you are able to download the website page
+
+kubectl exec -it busybox sh
+wget [SERVICE-IP]:8080
+In this scenario, you should get connection refused error.
+
+Step 4: Fix the Issue
+
+If you will observe the service endpoints, they are associated with a deployment named "qa40-fix". This deployment is running based on nginx image and is running on a default port of 80 with label qa40-fix. However within the service, match labels is misspelled. This is causing the issue. Change the match label in service to qa40-fix and reapply the service should fix the issue
+
+kubectl edit service fix-service
+
+Once the issue has been fixed, run the wget command once again and everything should work as expected. The index.html file will be downloaded.
