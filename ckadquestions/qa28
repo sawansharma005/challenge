@@ -1,3 +1,4 @@
+#Configuration/Workload
 namespace ns28 should have a secret secret28 which is supposed to be utilized by a busybox container in a pod.
 
     1. Create a multicontainer pod named as qa28 in ns28 namespace with below configuration

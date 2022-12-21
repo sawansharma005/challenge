@@ -1,3 +1,4 @@
+#Workload
 #Create a Pod with an image Redis and configure a volume that lasts for the lifetime of the Pod
 
 Soution:

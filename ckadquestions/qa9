@@ -1,3 +1,4 @@
+#Workload
 #Create a Pod with main container busybox and which executes this “while true; do echo ‘Hi I am from Main container’ >> /var/log/index.html; sleep 5; done” and with sidecar container with nginx image which exposes on port 8080. Use emptyDir Volume and mount this volume on path /var/log for busybox and on path /usr/share/nginx/html for nginx container under qa9 namespace and verify both containers are running.
 
 Solution:

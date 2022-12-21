@@ -1,3 +1,4 @@
+#Scheduling/NetworkPolicy
 Create an nginx deployment of 2 replicas, expose it via a ClusterIP service on port 80 in namespace ns35
 Create a NetworkPolicy so that only pods with labels 'access: granted' can access the deployment and apply it
 

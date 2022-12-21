@@ -1,3 +1,4 @@
+#Scheduling
 #Create a deployment qa12 under namespace ns12 called frontend with image=nginx and replicas=3
 #Once done, store the pod details in /tmp/qa12 file
 #Increate the replicas of the above deployment to 5

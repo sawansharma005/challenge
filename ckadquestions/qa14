@@ -1,3 +1,4 @@
+#Scheduling
 # Create a deployment frontend in ns14 namespace having image as nginx:1.17.1 with 10 replicas
 # Apply the autoscaling to this deployment with minimum 1 and maximum 10 replicas and target CPU of 85%.
 # verify hpa is created and replicas are decreased to 10 from 1

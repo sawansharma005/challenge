@@ -1,3 +1,4 @@
+#WorkLoad
 # Create a nginx pod named as hello-world with version 1.17.4 and expose it to port 8080.
 #Then change the Image version to 1.15-alpine for the pod you just created and verify the image version is updated
 

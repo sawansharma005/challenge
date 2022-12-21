@@ -1,3 +1,4 @@
+#Workload/Logging
 Create a pod named qa45-logging
 
 The Pod should have a container running from the nginx image with the following arguments:

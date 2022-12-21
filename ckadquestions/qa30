@@ -1,3 +1,4 @@
+#Workload
 Create a pod with the name of nginx-ports. The pod should be launched from an image of nginx The name of the container should be nginx. Expose Port 80 for the POD.
 
 Solution:

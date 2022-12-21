@@ -1,3 +1,4 @@
+#Security
 Create a Network Policy that should only allow  traffic from namespace ns33 and block all the other. 
 
 

@@ -1,3 +1,4 @@
+#Storage
 Create a persistent volume with the name test-pv. The size should be 2Gi and hostpath should be /tmp/mydata. It should have access mode of ReadWriteOnce
 Create a persistent volume claim that will make use of the PV created earlier.
 Create a Pod named test-pv-pod. The POD should have the volume mounted at /mydata directory.

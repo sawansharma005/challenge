@@ -1,3 +1,4 @@
+#Scheduling
 Create a deployment named as qa27 with image=nginx in ns27 and make sure that the pods created by the above deployment should only use 
 cpu between .2 to .5 and
 memory between 100M to 200M

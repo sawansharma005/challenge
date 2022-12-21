@@ -1,3 +1,4 @@
+#Service and configuration
 Create a single ingress resource called ingress-vh-routing. The resource should route HTTP traffic to multiple hostnames as specified below:
 The service video-service(running on port 8080) should be accessible on http://watch.ecom-store.com:30093/video
 The service apparels-service(running on port 8080) should be accessible on http://apparels.ecom-store.com:30093/wear            

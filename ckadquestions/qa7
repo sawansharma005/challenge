@@ -1,3 +1,4 @@
+Workload
 # Create a busybox pod named as qa7 command sleep 3600 and  list the pod with different levels of verbosity
 # Also List the pods with custom columns POD_NAME and POD_STATUS and store the output under /tmp/qa7
 

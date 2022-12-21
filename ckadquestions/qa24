@@ -1,3 +1,4 @@
+#Configuration
 Use the same configmap as we have created in question 23 in a nginx deployment and mount the configmap as nginx-volume and put the configmap data into /etc/qa24 directory in pod.
 
 solution:

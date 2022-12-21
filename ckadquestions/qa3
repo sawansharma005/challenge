@@ -1,3 +1,4 @@
+#Storage
 #Description
 Create a hostPath PersistentVolume named busybox-pv with storage 10Gi, access modes ReadWriteOnce, storageClassName manual, and volume at /mnt/data.
 Then create a persistent volume claim, named as busybox-pvc of 3Gi  storage and ReadWriteOnce access mode and make sure it should be bound status.

@@ -1,3 +1,4 @@
+#Workload
 # Create 5 nginx pods in which two of them is labeled env=prod and three of them is labeled env=dev
 # Verify all the pods are created with correct labels
 # Get the pods with label env=dev and store it under /tmp/qa10 file

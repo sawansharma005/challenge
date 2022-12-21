@@ -1,3 +1,4 @@
+#Configuraiton and workload
 # label a node01 as nodeName=nginxnode
 # create a pod named as qa11 with image=nginx in qa11 namespace.
 # pod should be deployed on a node labeled as nodeName=nginxnode

@@ -1,3 +1,4 @@
+#Workload
 #Create an nginx pod with containerPort 80 and with a PersistentVolumeClaim task-pv-claim and has a mouth path "/usr/share/nginx/html"
 Note: Use the pvc we created in qa17
 

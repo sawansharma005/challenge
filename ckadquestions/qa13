@@ -1,3 +1,4 @@
+#Scheduling
 #Create a deployment of webapp with image nginx:1.17.1 with container port 80 and verify the image version
 #Update the deployment with the image version 1.17.4 and verify
 #Check the rollout history and make sure everything is ok after the update store the data in /tmp/qa13 file

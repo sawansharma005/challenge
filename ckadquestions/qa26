@@ -1,3 +1,4 @@
+#Scheduling/Workload
 Create a Daemonset under qa26 namespace, create namespace if not exist, with below details
   name: dsqa26
   image: nginx

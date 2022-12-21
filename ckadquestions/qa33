@@ -1,3 +1,4 @@
+#Service Configuration/Scheduling
 Create the nginx deployment with 3 replicas and expose it on port 8080.
 Validate the deployment and service created.
 Browse the application using port-forwarding on the service.
